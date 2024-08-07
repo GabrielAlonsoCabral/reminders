@@ -1,5 +1,5 @@
 import './App.css'
-import TaskPage from './pages/tasks'
+import TaskPage from './pages/tasks/components/table'
 
 function App() {
 

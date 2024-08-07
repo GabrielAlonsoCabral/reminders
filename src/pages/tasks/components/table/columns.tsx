@@ -1,10 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { priorities, statuses } from "../../data/mock"
-import { Task } from "../../schemas/task.schema"
-
-import { DataTableColumnHeader } from "./data-table-column-header"
+import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Checkbox } from "../ui/checkbox"
+import { DataTableColumnHeader } from "@/components/table/data-table-column-header"
+import { Task } from "@/schemas/task.schema"
+import { statuses, priorities } from "@/data/mock"
 
 export const columns: ColumnDef<Task>[] = [
     {

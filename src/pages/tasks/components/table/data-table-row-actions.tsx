@@ -9,19 +9,26 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { Button } from "../ui/button"
+import { Button } from "../../../../components/ui/button"
 import { useTasksStore } from "@/stores/tasks-store"
+import { toast } from "sonner"
+import { useState } from "react"
+import { UpdateTaskDialog } from "../dialogs/update-task-dialog"
+import { Task } from "@/schemas/task.schema"
 
-interface DataTableRowActionsProps<TData> {
-    row: Row<{ id: string } & TData>
+interface DataTableRowActionsProps {
+    row: Row<Task>
 }
 
-export function DataTableRowActions<TData>({
+export function DataTableRowActions({
     row,
-}: DataTableRowActionsProps<TData>) {
+}: DataTableRowActionsProps) {
+    const [isUpdateOpen, setIsUpdateOpen] = useState(false)
     const deleteTask = useTasksStore(state => state.deleteTask)
+
     return (
         <DropdownMenu>
+            <UpdateTaskDialog initialTask={row.original} isOpen={isUpdateOpen} onClose={() => setIsUpdateOpen(false)} />
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
@@ -32,12 +39,15 @@ export function DataTableRowActions<TData>({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsUpdateOpen(true)}>Edit</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => deleteTask(row.original.id)} >
+                <DropdownMenuItem onClick={() => {
+                    deleteTask(row.original.id)
+                    toast.success("Task deleted successfully")
+                }
+                } >
                     Delete
-                    {/* <UpsertTaskButton type="update" /> */}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

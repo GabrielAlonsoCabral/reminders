@@ -7,7 +7,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,35 +18,33 @@ import { useTasksStore } from "@/stores/tasks-store"
 import { toast } from "sonner"
 
 export type OnSubmit = (task: Task) => void
-export type CreateTaskProps = {
-    task?: Task
+export type UpdateTaskProps = {
+    isOpen: boolean
+    onClose: OnSubmit
+    initialTask: Task
 }
 
-export function CreateTaskDialog({
-    task,
-}: CreateTaskProps) {
-    const createTaskOnStore = useTasksStore(state => state.createTask)
+export function UpdateTaskDialog({
+    isOpen,
+    onClose,
+    initialTask,
+}: UpdateTaskProps) {
+    const updateTaskOnStore = useTasksStore(state => state.updateTask)
 
     const [upsertedTask, setUpsertedTask] = useState<Task>({
-        id: task?.id || `TASK-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
-        title: task?.title || "",
-        status: task?.status || "todo",
-        priority: task?.priority || "medium",
+        id: initialTask.id,
+        title: initialTask.title,
+        status: initialTask.status,
+        priority: initialTask.priority,
     })
 
-    function onCreateTask(task: Task) {
+    function onUpdateTask(task: Task) {
         try {
             taskSchema.parse(task)
-            createTaskOnStore(task)
-            setUpsertedTask({
-                id: `TASK-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
-                title: "",
-                status: "todo",
-                priority: "medium",
-            })
-            toast.success("Task created successfully")
+            updateTaskOnStore(task.id, task)
+            toast.success("Task updated successfully")
         } catch (error) {
-            toast.error("Error creating task")
+            toast.error("Error updating task")
         }
     }
 
@@ -73,26 +70,29 @@ export function CreateTaskDialog({
     }, [upsertedTask])
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button className="h-8 border-dashed" variant="outline">Create task</Button>
-            </DialogTrigger>
+        <Dialog open={isOpen}
+            onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    onClose(upsertedTask)
+                }
+            }}
+        >
             <DialogContent forceMount className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Create task</DialogTitle>
+                    <DialogTitle>Update task</DialogTitle>
                     <DialogDescription>
-                        Create a new task
+                        Update an existing task
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
+                        <Label htmlFor="title" className="text-right">
                             Title
                         </Label>
-                        <Input id="name" value={upsertedTask.title} className="col-span-3" onChange={handleTitleChange} />
+                        <Input id="title" value={upsertedTask.title} className="col-span-3" onChange={handleTitleChange} />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="username" className="text-right">
+                        <Label htmlFor="status" className="text-right">
                             Status
                         </Label>
                         <div className="col-span-3 ">
@@ -100,7 +100,7 @@ export function CreateTaskDialog({
                         </div>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="username" className="text-right">
+                        <Label htmlFor="priority" className="text-right">
                             Priority
                         </Label>
                         <div className="col-span-3 ">
@@ -110,8 +110,11 @@ export function CreateTaskDialog({
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button type="submit" disabled={!isValid} onClick={() => onCreateTask(upsertedTask)} >
-                            Create
+                        <Button type="submit" disabled={!isValid} onClick={() => {
+                            onUpdateTask(upsertedTask)
+                            onClose(upsertedTask)
+                        }} >
+                            Update
                         </Button>
                     </DialogClose>
                 </DialogFooter>

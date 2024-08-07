@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import {
     ColumnDef,
@@ -11,7 +9,6 @@ import {
     getFacetedRowModel,
     getFacetedUniqueValues,
     getFilteredRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
@@ -25,8 +22,9 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
+import { useTasksStore } from "@/stores/tasks-store"
+import { toast } from "sonner"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -39,12 +37,13 @@ export function DataTable<TData, TValue>({
     data,
     extraButtons
 }: DataTableProps<TData, TValue>) {
-    const [rowSelection, setRowSelection] = React.useState({})
+    const [rowSelection, setRowSelection] = React.useState<Record<number, boolean>>({})
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     )
+
     const [sorting, setSorting] = React.useState<SortingState>([])
 
     const table = useReactTable({
@@ -63,11 +62,29 @@ export function DataTable<TData, TValue>({
         onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedUniqueValues: getFacetedUniqueValues()
     })
+
+    const setAsDone = useTasksStore(state => state.setAsDone)
+    const tasks = useTasksStore(state => state.tasks)
+
+    React.useEffect(() => {
+        if (rowSelection && Object.keys(rowSelection).length > 0) {
+            const tasksToSetAsDone = tasks.map((task, index) => {
+                if (rowSelection[index]) {
+                    return task
+                }
+            }).filter(item => item?.id)
+
+            setAsDone(tasksToSetAsDone.map((task) => task!.id))
+            toast.success("Task(s) set as done successfully")
+            setTimeout(() => {
+                setRowSelection({})
+            }, 1000);
+        }
+    }, [rowSelection])
 
     return (
         <div className="space-y-4">
@@ -122,7 +139,6 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} />
         </div>
     )
 }

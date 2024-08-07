@@ -7,6 +7,7 @@ type TasksStore = {
     createTask: (task: Task) => void
     deleteTask: (id: string) => void
     updateTask: (id: string, updatedTask: Task) => void
+    setAsDone: (ids: string[]) => void
 }
 
 const tasksOnLocalStorage = localStorage.getItem("tasks") ? JSON.parse(localStorage.getItem('tasks') || '[]') : tasks
@@ -25,6 +26,21 @@ export const useTasksStore = create<TasksStore>((set) => ({
         localStorage.setItem('tasks', JSON.stringify(tasks))
         return {
             tasks,
+        }
+    }),
+    setAsDone: (ids: string[]) => set((state) => {
+        const updatedTasks = state.tasks.map((task) => {
+            if (ids.some(taskId => taskId === task.id)) {
+                return {
+                    ...task,
+                    status: 'done',
+                }
+            }
+            return task
+        })
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks))
+        return {
+            tasks: updatedTasks,
         }
     }),
     updateTask: (id: string, updatedTask: Task) => set((state) => {

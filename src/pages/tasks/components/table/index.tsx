@@ -1,9 +1,8 @@
-// import Image from "next/image"
-import { columns } from "@/components/table/columns"
 import { DataTable } from "@/components/table/data-table"
 import { UserNav } from "@/components/navigation/user-nav"
-import { CreateTaskDialog } from "./components/actions/create-task-dialog"
+import { CreateTaskDialog } from "../dialogs/create-task-dialog"
 import { useTasksStore } from "@/stores/tasks-store"
+import { columns } from "./columns"
 
 export default function TaskPage() {
     const taskOnStore = useTasksStore(state => state.tasks)

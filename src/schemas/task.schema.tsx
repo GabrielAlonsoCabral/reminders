@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const taskSchema = z.object({
   id: z.string(),
-  title: z.string(),
+  title: z.string().min(1),
   status: z.string(),
   priority: z.string(),
 })
