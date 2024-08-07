@@ -1,12 +1,15 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { statuses } from "@/data/mock";
 
-export default function SelectStatus() {
+export type SelectStatusesProps = {
+    value: string
+    onValueChange: (value: string) => void
+}
+
+export default function SelectStatus({ value, onValueChange }: SelectStatusesProps) {
     return (<Select
-        value={`todo`}
-    // onValueChange={(value) => {
-    //     table.setPageSize(Number(value))
-    // }}
+        value={value}
+        onValueChange={onValueChange}
     >
         <SelectTrigger className="h-8 w-[120px]">
             <SelectValue placeholder={statuses[0].value} />

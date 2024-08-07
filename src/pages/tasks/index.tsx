@@ -2,10 +2,11 @@
 import { columns } from "@/components/table/columns"
 import { DataTable } from "@/components/table/data-table"
 import { UserNav } from "@/components/navigation/user-nav"
-import tasks from "@/data/tasks"
-import { UpsertTaskButton } from "./components/table/upsert-task"
+import { CreateTaskDialog } from "./components/actions/create-task-dialog"
+import { useTasksStore } from "@/stores/tasks-store"
 
 export default function TaskPage() {
+    const taskOnStore = useTasksStore(state => state.tasks)
 
     return (
         <>
@@ -21,7 +22,7 @@ export default function TaskPage() {
                         <UserNav />
                     </div>
                 </div>
-                <DataTable data={tasks} columns={columns} extraButtons={<UpsertTaskButton type="create" />} />
+                <DataTable data={taskOnStore} columns={columns} extraButtons={<CreateTaskDialog />} />
             </div>
         </>
     )

@@ -10,14 +10,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { Button } from "../ui/button"
+import { useTasksStore } from "@/stores/tasks-store"
 
 interface DataTableRowActionsProps<TData> {
-    row: Row<TData>
+    row: Row<{ id: string } & TData>
 }
 
 export function DataTableRowActions<TData>({
     row,
 }: DataTableRowActionsProps<TData>) {
+    const deleteTask = useTasksStore(state => state.deleteTask)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -33,8 +35,9 @@ export function DataTableRowActions<TData>({
                 <DropdownMenuItem>Edit</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => deleteTask(row.original.id)} >
                     Delete
+                    {/* <UpsertTaskButton type="update" /> */}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

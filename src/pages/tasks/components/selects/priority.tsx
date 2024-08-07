@@ -1,12 +1,15 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { priorities } from "@/data/mock";
 
-export default function SelectPriority() {
+export type SelectPriorityProps = {
+    value: string
+    onValueChange: (value: string) => void
+}
+
+export default function SelectPriority({ value, onValueChange }: SelectPriorityProps) {
     return (<Select
-        value={`medium`}
-    // onValueChange={(value) => {
-    //     table.setPageSize(Number(value))
-    // }}
+        value={value}
+        onValueChange={onValueChange}
     >
         <SelectTrigger className="h-8 w-[120px]">
             <SelectValue placeholder={priorities[0].value} />
